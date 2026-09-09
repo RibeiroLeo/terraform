@@ -1,0 +1,26 @@
+# Terraform working data and state
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
+# Keep dependency locks, never commit local variable/secrets files
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+backend.hcl
+environments/**/backend.tf
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Tooling and OS files
+.terraformrc
+terraform.rc
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

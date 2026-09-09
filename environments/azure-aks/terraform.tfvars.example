@@ -1,0 +1,13 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+project_name    = "devops-portfolio"
+environment     = "dev"
+location        = "Brazil South"
+
+# Recommended: add at least one Microsoft Entra group object ID.
+admin_group_object_ids = []
+
+tags = {
+  Owner      = "your-name"
+  CostCenter = "portfolio"
+}
+

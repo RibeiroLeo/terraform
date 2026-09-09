@@ -1,0 +1,6 @@
+resource_group_name  = "rg-terraform-state"
+storage_account_name = "replacewithgloballyuniquename"
+container_name       = "tfstate"
+key                  = "dev/azure-aks/terraform.tfstate"
+use_azuread_auth     = true
+

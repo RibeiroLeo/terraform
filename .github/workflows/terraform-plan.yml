@@ -1,0 +1,86 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch:
+    inputs:
+      stack:
+        description: Stack to plan
+        required: true
+        type: choice
+        options:
+          - aws-ecs
+          - aws-eks
+          - azure-container-apps
+          - azure-aks
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-plan-${{ inputs.stack }}
+  cancel-in-progress: false
+
+jobs:
+  aws-plan:
+    if: startsWith(inputs.stack, 'aws-')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: environments/${{ inputs.stack }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.1"
+      - name: Authenticate to AWS with OIDC
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      - run: terraform init -input=false
+      - name: Create human-readable plan
+        run: terraform plan -input=false -no-color | tee plan.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.stack }}-plan
+          path: environments/${{ inputs.stack }}/plan.txt
+          retention-days: 7
+
+  azure-plan:
+    if: startsWith(inputs.stack, 'azure-')
+    runs-on: ubuntu-latest
+    env:
+      TF_VAR_subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    defaults:
+      run:
+        working-directory: environments/${{ inputs.stack }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.1"
+      - name: Authenticate to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: terraform init -input=false
+      - name: Create human-readable plan
+        run: terraform plan -input=false -no-color | tee plan.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.stack }}-plan
+          path: environments/${{ inputs.stack }}/plan.txt
+          retention-days: 7
+
+  approve-plan:
+    name: Human approval
+    needs: [aws-plan, azure-plan]
+    if: always() && (needs.aws-plan.result == 'success' || needs.azure-plan.result == 'success')
+    runs-on: ubuntu-latest
+    environment: terraform-plan-approval
+    steps:
+      - name: Record approval
+        run: echo "The generated plan artifact was reviewed and approved."

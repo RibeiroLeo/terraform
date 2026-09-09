@@ -1,0 +1,10 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+project_name    = "devops-portfolio"
+environment     = "dev"
+location        = "Brazil South"
+container_image = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
+
+tags = {
+  Owner      = "your-name"
+  CostCenter = "portfolio"
+}

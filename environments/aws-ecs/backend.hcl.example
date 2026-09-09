@@ -1,0 +1,7 @@
+# Create the bucket and lock table once, then pass this file to `terraform init`.
+bucket         = "replace-me-terraform-state"
+key            = "dev/aws-ecs/terraform.tfstate"
+region         = "us-east-1"
+dynamodb_table = "replace-me-terraform-locks"
+encrypt        = true
+
