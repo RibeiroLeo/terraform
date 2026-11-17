@@ -1,27 +1,46 @@
-# GitHub Actions, OIDC e aprovação
+# GitHub Actions: plan sem credenciais
 
-## Quality gate
+## Pipeline ativa
 
-`terraform-ci.yml` não acessa contas cloud: baixa providers, valida as quatro
-raízes e executa análise estática em todo pull request.
+`.github/workflows/terraform-ci.yml` roda em pull requests, pushes no branch
+`master` e por acionamento manual. Os jobs seguem esta ordem:
 
-## Plan autenticado
+```text
+Format ──> Validate (4 stacks) ──> Offline plan (4 stacks)
+       └─> Security ──────────────┘
+```
 
-1. Em **Settings > Environments**, crie `terraform-plan-approval`.
-2. Adicione required reviewers. O job fica aguardando depois que o artefato do
-   plan foi publicado; revise `plan.txt` antes de aprovar.
-3. Em **Settings > Secrets and variables > Actions > Variables**, configure:
-   - `AWS_ROLE_ARN` para uma role federada ao GitHub;
-   - `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` e `AZURE_SUBSCRIPTION_ID` para uma app
-     registration/federated credential.
-4. Restrinja os trust policies ao owner, repositório, branch e Environment.
-5. Em **Actions > Terraform Plan > Run workflow**, selecione a stack.
+Cada plan usa um `mock_provider` nativo do Terraform, definido em
+`environments/<stack>/tests/ci_plan.tftest.hcl`. Assim, `terraform test` executa
+um `command = plan` completo sem pedir token, consultar APIs ou criar recursos.
 
-O workflow pede um plano manualmente, autentica sem segredo estático, publica
-`plan.txt` e só então aguarda a aprovação do Environment. Ele nunca executa
-`apply`.
+O resultado de cada stack fica disponível no run como artefato
+`<stack>-offline-plan` por sete dias. `set -o pipefail` garante que o job falhe
+mesmo com a saída passando por `tee`.
 
-O workflow usa o backend local efêmero porque o objetivo é planejar a criação
-completa. Para continuidade de state, copie `backend.tf.example` para
-`backend.tf` e forneça a configuração do backend como variáveis protegidas do
-Environment.
+## O que esse plan garante
+
+- configuração e sintaxe válidas;
+- compatibilidade com o schema do provider baixado pelo lockfile;
+- avaliação de tipos, expressões, dependências, checks e lifecycle;
+- construção do grafo de recursos das quatro stacks.
+
+Ele não valida permissões IAM/RBAC, quotas, SKUs disponíveis na região, drift,
+estado remoto ou respostas reais das APIs. Por isso o artefato é chamado de
+**offline speculative plan**, e não de plan de implantação.
+
+## Ativação futura de OIDC
+
+Os blocos de login AWS/Azure, a permissão `id-token: write` e o job de aprovação
+estão comentados no próprio workflow. Quando existirem contas sandbox:
+
+1. crie roles federadas restritas ao owner, repositório e branch;
+2. configure `AWS_ROLE_ARN`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` e
+   `AZURE_SUBSCRIPTION_ID` como variables do repositório;
+3. habilite `id-token: write` e os passos de login correspondentes;
+4. troque o teste mockado por `terraform plan` autenticado com backend remoto;
+5. crie o Environment `terraform-plan-approval` com required reviewers e
+   habilite o job de confirmação somente após o plan real ser publicado.
+
+Não habilite `apply` automaticamente junto com essa mudança. O princípio é
+separar geração/revisão do plan da identidade autorizada a aplicar.

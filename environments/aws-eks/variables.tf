@@ -36,7 +36,7 @@ variable "kubernetes_version" {
 variable "allowed_api_cidrs" {
   description = "Networks allowed to access the public Kubernetes API. Replace the default before apply."
   type        = list(string)
-  default     = ["192.0.2.0/24"]
+  default     = ["10.0.0.0/8"]
 }
 
 variable "tags" {

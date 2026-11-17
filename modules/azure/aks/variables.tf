@@ -51,7 +51,7 @@ variable "admin_group_object_ids" {
 variable "private_cluster_enabled" {
   description = "Use a private Kubernetes API endpoint. Requires private network access for kubectl."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "log_retention_days" {

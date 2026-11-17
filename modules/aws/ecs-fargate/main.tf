@@ -87,6 +87,9 @@ resource "aws_iam_role_policy" "ecs_exec" {
   })
 }
 
+# Demo exception: the ALB must reach private targets; narrow this with separate
+# egress rules or VPC endpoints before production.
+#trivy:ignore:AVD-AWS-0104
 resource "aws_security_group" "alb" {
   name_prefix = "${var.name}-alb-"
   description = "Public HTTP ingress to ${var.name}"
@@ -115,6 +118,9 @@ resource "aws_security_group" "alb" {
   }
 }
 
+# Demo exception: tasks need public image pulls and CloudWatch/SSM egress through
+# NAT. Replace this with VPC endpoints and scoped rules before production.
+#trivy:ignore:AVD-AWS-0104
 resource "aws_security_group" "task" {
   name_prefix = "${var.name}-task-"
   description = "Only the ALB can reach ${var.name} tasks"
@@ -172,6 +178,9 @@ resource "aws_lb_target_group" "this" {
   tags = local.tags
 }
 
+# Demo exception: no DNS zone or ACM certificate is assumed by this portfolio.
+# Supply TLS/ACM before any production deployment.
+#trivy:ignore:AVD-AWS-0054
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
   port              = 80

@@ -11,5 +11,5 @@ aws eks update-kubeconfig --region <region> --name <cluster_name>
 kubectl get nodes
 ```
 
-For a real deployment, restrict `public_access_cidrs` to a trusted corporate or
-VPN CIDR, or disable the public endpoint entirely.
+The public endpoint is disabled by default. If you enable it for a sandbox,
+restrict `public_access_cidrs` to a trusted corporate or VPN CIDR.

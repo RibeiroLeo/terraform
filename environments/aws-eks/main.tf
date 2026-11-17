@@ -29,7 +29,7 @@ module "eks" {
   node_min_size          = 1
   node_desired_size      = 2
   node_max_size          = 4
-  endpoint_public_access = true
+  endpoint_public_access = false
   public_access_cidrs    = var.allowed_api_cidrs
   tags                   = local.common_tags
 }

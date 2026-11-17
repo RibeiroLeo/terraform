@@ -36,8 +36,8 @@ flowchart LR
 ```
 
 O cluster usa criptografia KMS para Secrets, logs de todos os componentes do
-control plane e nodes privados. O endpoint público fica ligado no exemplo para
-facilitar o laboratório, mas deve ter CIDRs restritos.
+control plane, nodes privados e endpoint privado por padrão. Para habilitar o
+endpoint público, forneça somente CIDRs confiáveis.
 
 ## Azure: container Docker
 
@@ -70,9 +70,8 @@ flowchart LR
   Policy[Azure Policy] --> API
 ```
 
-Azure RBAC, OIDC e Workload Identity são habilitados. O exemplo mantém a API
-pública para facilitar o plan/demo e oferece um único switch para torná-la
-privada.
+Azure RBAC, OIDC e Workload Identity são habilitados. A API é privada por padrão
+e exige conectividade com a VNet para uso do `kubectl`.
 
 ## Decisões
 

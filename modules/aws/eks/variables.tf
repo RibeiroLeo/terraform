@@ -57,13 +57,13 @@ variable "node_max_size" {
 variable "endpoint_public_access" {
   description = "Expose the Kubernetes API publicly. Restrict public_access_cidrs when enabled."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "public_access_cidrs" {
   description = "CIDRs allowed to reach the public Kubernetes API endpoint."
   type        = list(string)
-  default     = ["192.0.2.0/24"]
+  default     = ["10.0.0.0/8"]
 }
 
 variable "log_retention_days" {

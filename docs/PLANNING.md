@@ -46,6 +46,9 @@ pelo Git.
 ```bash
 terraform fmt -recursive -check
 terraform validate
+terraform test -verbose -no-color
+
+# Apenas quando houver autenticação cloud:
 terraform plan -refresh=false -out=tfplan
 terraform show -no-color tfplan
 ```
@@ -58,6 +61,7 @@ um `.tfplan`: ele pode conter valores sensíveis.
 
 ```bash
 make validate STACK=aws-ecs
+make offline-plan STACK=aws-ecs
 make validate STACK=aws-eks
 make validate STACK=azure-container-apps
 make validate STACK=azure-aks

@@ -31,7 +31,7 @@ module "aks" {
   min_count               = 1
   max_count               = 3
   admin_group_object_ids  = var.admin_group_object_ids
-  private_cluster_enabled = false
+  private_cluster_enabled = true
   tags                    = local.common_tags
 }
 

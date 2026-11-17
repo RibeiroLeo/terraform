@@ -1,7 +1,7 @@
 STACK ?= aws-ecs
 DIR := environments/$(STACK)
 
-.PHONY: fmt init validate plan
+.PHONY: fmt init validate offline-plan plan
 
 fmt:
 	terraform fmt -recursive -check
@@ -11,6 +11,9 @@ init:
 
 validate: init
 	terraform -chdir=$(DIR) validate
+
+offline-plan: validate
+	terraform -chdir=$(DIR) test -verbose -no-color
 
 plan:
 	terraform -chdir=$(DIR) init
