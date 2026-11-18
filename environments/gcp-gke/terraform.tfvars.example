@@ -1,0 +1,7 @@
+project_id = "your-gcp-project-id"
+name       = "portfolio-gke"
+region     = "us-central1"
+node_zones = ["us-central1-a"]
+
+# For administration from a connected subnet, add its source CIDR.
+# admin_networks = { management = "10.34.0.0/24" }

@@ -1,0 +1,10 @@
+project_id    = "your-gcp-project-id"
+name          = "portfolio-run"
+region        = "us-central1"
+repository_id = "portfolio-docker"
+
+# Grant your own account access to the service when testing a deployment.
+# invoker_members = ["user:you@example.com"]
+
+# Set an OCI image URL after pushing it to Artifact Registry.
+# container_image = "us-central1-docker.pkg.dev/your-gcp-project-id/portfolio-docker/demo:v1"

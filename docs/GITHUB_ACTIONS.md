@@ -6,7 +6,7 @@
 `master` e por acionamento manual. Os jobs seguem esta ordem:
 
 ```text
-Format ──> Validate (4 stacks) ──> Offline plan (4 stacks)
+Format ──> Validate (6 stacks) ──> Offline plan (6 stacks)
        └─> Security ──────────────┘
 ```
 
@@ -23,7 +23,7 @@ mesmo com a saída passando por `tee`.
 - configuração e sintaxe válidas;
 - compatibilidade com o schema do provider baixado pelo lockfile;
 - avaliação de tipos, expressões, dependências, checks e lifecycle;
-- construção do grafo de recursos das quatro stacks.
+- construção do grafo de recursos das seis stacks.
 
 Ele não valida permissões IAM/RBAC, quotas, SKUs disponíveis na região, drift,
 estado remoto ou respostas reais das APIs. Por isso o artefato é chamado de
@@ -31,12 +31,17 @@ estado remoto ou respostas reais das APIs. Por isso o artefato é chamado de
 
 ## Ativação futura de OIDC
 
-Os blocos de login AWS/Azure, a permissão `id-token: write` e o job de aprovação
-estão comentados no próprio workflow. Quando existirem contas sandbox:
+Os blocos de login AWS, Azure e GCP, a permissão `id-token: write` e o job de
+aprovação estão comentados no próprio workflow. Quando existirem contas sandbox:
 
-1. crie roles federadas restritas ao owner, repositório e branch;
-2. configure `AWS_ROLE_ARN`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` e
-   `AZURE_SUBSCRIPTION_ID` como variables do repositório;
+1. configure as identidades federadas com condições para o repositório e a
+   branch autorizados. No GCP, use um provider de Workload Identity Federation
+   com impersonação de uma conta de serviço;
+2. configure `AWS_ROLE_ARN`, `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`,
+   `AZURE_SUBSCRIPTION_ID`, `GCP_PROJECT_ID`, `GCP_WORKLOAD_IDENTITY_PROVIDER`
+   e `GCP_SERVICE_ACCOUNT` para as plataformas que serão autenticadas.
+   Para um plan real no GCP, passe `GCP_PROJECT_ID` também como
+   `TF_VAR_project_id`;
 3. habilite `id-token: write` e os passos de login correspondentes;
 4. troque o teste mockado por `terraform plan` autenticado com backend remoto;
 5. crie o Environment `terraform-plan-approval` com required reviewers e

@@ -73,13 +73,40 @@ flowchart LR
 Azure RBAC, OIDC e Workload Identity são habilitados. A API é privada por padrão
 e exige conectividade com a VNet para uso do `kubectl`.
 
+## GCP: container Docker
+
+```mermaid
+flowchart LR
+  Client[Cliente autenticado] -->|HTTPS| Run[Cloud Run v2]
+  Registry[Artifact Registry] -->|Imagem OCI| Run
+  Runtime[Conta de serviço dedicada] -->|Identidade de execução| Run
+```
+
+O serviço exige IAM para invocação. A stack cria um registry para imagens
+próprias e usa a imagem de exemplo do Google na primeira implantação.
+
+## GCP: Kubernetes
+
+```mermaid
+flowchart LR
+  Admin[Administração na rede privada] --> API[Control plane regional do GKE]
+  API --> Nodes[Pool autoscalável de nós privados]
+  subgraph VPC
+    Nodes --> NAT[Cloud NAT]
+    Nodes --> Ranges[Faixas de Pods e Services]
+  end
+```
+
+Os nós usam Workload Identity Federation para workloads e uma conta de
+serviço dedicada para operações do GKE. O padrão usa nós em uma zona, com
+opção de distribuí-los em mais zonas da região.
+
 ## Decisões
 
-- ECS Fargate e Azure Container Apps representam o caminho Docker sem operação
-  de VMs.
-- EKS e AKS cobrem os ambientes Kubernetes solicitados.
+- ECS Fargate, Azure Container Apps e Cloud Run representam o caminho Docker
+  com execução gerenciada.
+- EKS, AKS e GKE cobrem os ambientes Kubernetes.
 - Um NAT compartilhado reduz o custo do laboratório; produção pode adotar um
   NAT por AZ para remover esse ponto único de falha.
-- Os providers aceitam apenas a próxima major abaixo de `7.0`/`6.0`; o lockfile
-  criado por `terraform init` fixa a versão efetivamente testada.
+- O lockfile de cada ambiente fixa a versão do provider testada pelo CI.
 

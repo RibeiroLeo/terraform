@@ -1,0 +1,3 @@
+# The bucket must exist before initializing this backend.
+bucket = "replace-with-your-terraform-state-bucket"
+prefix = "dev/gcp-gke"

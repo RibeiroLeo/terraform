@@ -8,6 +8,10 @@
 | `modules/azure/network` | Resource group, VNet e subnets especializadas | `name`, `location` | RG, VNet e subnet IDs |
 | `modules/azure/container-apps` | Environment, app, identity, logs e ingress | RG, subnet, imagem | URL, app ID, principal ID |
 | `modules/azure/aks` | AKS, VMSS pool, identity, policy e logs | RG, subnet | cluster, OIDC, principal ID |
+| [GCP Network](../modules/gcp/network/README.md) | VPC, sub-rede, faixas secundárias, Cloud Router e NAT | projeto, região, CIDRs | VPC, sub-rede e nomes das faixas |
+| [GKE](../modules/gcp/gke/README.md) | Control plane regional privado, pool, IAM e Workload Identity | projeto, região, rede, faixas e zonas | cluster, endpoint privado, pool e identidade |
+| [Artifact Registry](../modules/gcp/artifact-registry/README.md) | Repositório Docker com tags imutáveis | projeto, região, ID do repositório | caminho do repositório Docker |
+| [Cloud Run](../modules/gcp/cloud-run/README.md) | Serviço HTTPS para imagem OCI, scaling e IAM de invocação | projeto, região, nome e imagem | nome do serviço, URL e conta de serviço |
 
 ## Padrão de consumo
 

@@ -22,6 +22,9 @@ export TF_VAR_subscription_id=<subscription-id>
 No PowerShell, use `$env:AWS_PROFILE = "portfolio"` ou
 `$env:TF_VAR_subscription_id = "..."`.
 
+GCP usa Application Default Credentials para o plan autenticado. Consulte
+[Preparar um plan autenticado no GCP](GCP.md#preparar-um-plan-autenticado).
+
 ## 2. Estado
 
 Para validação local sem state remoto:
@@ -65,6 +68,8 @@ make offline-plan STACK=aws-ecs
 make validate STACK=aws-eks
 make validate STACK=azure-container-apps
 make validate STACK=azure-aks
+make offline-plan STACK=gcp-gke
+make offline-plan STACK=gcp-cloud-run
 ```
 
 O Makefile é conveniência para Linux/macOS/WSL. No Windows puro, use diretamente
